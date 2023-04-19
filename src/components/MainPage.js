@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import TaskDetail from "./TaskDetail";
 import {
   Box,
   Container,
@@ -12,21 +13,31 @@ import {
   ListItemIcon,
   ListItemText,
   IconButton,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const TodoList = () => {
   const [tasks, setTasks] = useState([]);
-  const [taskInput, setTaskInput] = useState('');
+  const [taskInput, setTaskInput] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    console.log("I got here");
+  };
 
   const handleTaskInputChange = (e) => {
     setTaskInput(e.target.value);
   };
 
   const handleAddTask = () => {
-    if (taskInput.trim() !== '') {
+    if (taskInput.trim() !== "") {
       setTasks([...tasks, { text: taskInput, completed: false }]);
-      setTaskInput('');
+      setTaskInput("");
     }
   };
 
@@ -43,7 +54,7 @@ const TodoList = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh', color: '#333' }}>
+    <Box sx={{ bgcolor: "#f5f5f5", minHeight: "100vh", color: "#333" }}>
       <Container sx={{ py: 8 }}>
         <Typography variant="h2" sx={{ mb: 4 }}>
           Todo List
@@ -53,7 +64,7 @@ const TodoList = () => {
           onSubmit={(e) => {
             e.preventDefault();
           }}
-          sx={{ display: 'flex', alignItems: 'flex-end' }}
+          sx={{ display: "flex", alignItems: "flex-end" }}
         >
           <TextField
             label="New Task"
@@ -62,7 +73,9 @@ const TodoList = () => {
             fullWidth
             value={taskInput}
             onChange={handleTaskInputChange}
-            sx={{ '& .MuiOutlinedInput-notchedOutline': { borderColor: '#ccc' } }}
+            sx={{
+              "& .MuiOutlinedInput-notchedOutline": { borderColor: "#ccc" },
+            }}
           />
           <Button
             variant="contained"
@@ -75,20 +88,25 @@ const TodoList = () => {
         </Box>
         <List sx={{ mt: 4 }}>
           {tasks.map((task, index) => (
-            <ListItem key={index} disablePadding sx={{ fontSize: '1.5rem' }}>
-              <ListItemButton onClick={() => handleTaskCompletion(index)}>
-                <ListItemIcon>
-                  <Checkbox
-                    edge="start"
-                    checked={task.completed}
-                    tabIndex={-1}
-                    disableRipple
-                  />
-                </ListItemIcon>
-                <ListItemText primary={task.text} sx={{ color: '#333' }} />
+            <ListItem key={index} disablePadding sx={{ fontSize: "1.5rem" }}>
+              <ListItemIcon onClick={() => handleTaskCompletion(index)}>
+                <Checkbox
+                  edge="start"
+                  checked={task.completed}
+                  tabIndex={-1}
+                  disableRipple
+                />
+              </ListItemIcon>
+              <ListItemButton onClick={() => handleOpenDialog()}>
+                <TaskDetail
+                  isOpen={openDialog}
+                  name={task.text}
+                  handleClose={handleCloseDialog}
+                />
+                <ListItemText primary={task.text} sx={{ color: "#333" }} />
               </ListItemButton>
               <IconButton onClick={() => handleDeleteTask(index)}>
-                <DeleteIcon sx={{ color: '#333' }} />
+                <DeleteIcon sx={{ color: "#333" }} />
               </IconButton>
             </ListItem>
           ))}
