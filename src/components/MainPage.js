@@ -13,7 +13,9 @@ import {
   ListItemIcon,
   ListItemText,
   IconButton,
+
 } from "@mui/material";
+import Dialog from "./Dialog.js"
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const TodoList = () => {
@@ -21,6 +23,9 @@ const TodoList = () => {
   const [taskInput, setTaskInput] = useState("");
   const [descriptionInput, setDescriptionInput] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  //my part
+  const [open, setOpen] = React.useState(false);
+  //
   const [dialogData, setDialogData] = useState({
     task: {
       name: "",
@@ -29,10 +34,19 @@ const TodoList = () => {
     },
     index: -1,
   });
-
+  
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
+  // my part
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  // 
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -68,10 +82,15 @@ const TodoList = () => {
 
   return (
     <Box sx={{ bgcolor: "#f5f5f5", minHeight: "100vh", color: "#333" }}>
+      
+      
+      <Dialog />
+      
       <Container sx={{ py: 8 }}>
         <Typography variant="h2" sx={{ mb: 4 }}>
           Todo List
         </Typography>
+        
         <Box
           component="form"
           onSubmit={(e) => {
