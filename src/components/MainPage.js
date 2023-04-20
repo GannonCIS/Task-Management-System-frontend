@@ -20,6 +20,13 @@ const TodoList = () => {
   const [tasks, setTasks] = useState([]);
   const [taskInput, setTaskInput] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [dialogData, setDialogData] = useState({
+    task: {
+      name: "",
+      completed: false,
+    },
+    index: -1,
+  });
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -27,7 +34,6 @@ const TodoList = () => {
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
-    console.log("I got here");
   };
 
   const handleTaskInputChange = (e) => {
@@ -36,7 +42,7 @@ const TodoList = () => {
 
   const handleAddTask = () => {
     if (taskInput.trim() !== "") {
-      setTasks([...tasks, { text: taskInput, completed: false }]);
+      setTasks([...tasks, { name: taskInput, completed: false }]);
       setTaskInput("");
     }
   };
@@ -97,13 +103,17 @@ const TodoList = () => {
                   disableRipple
                 />
               </ListItemIcon>
-              <ListItemButton onClick={() => handleOpenDialog()}>
-                <TaskDetail
-                  isOpen={openDialog}
-                  name={task.text}
-                  handleClose={handleCloseDialog}
-                />
-                <ListItemText primary={task.text} sx={{ color: "#333" }} />
+              <ListItemButton onClick={() => {
+                setDialogData({
+                  task: {
+                    name: task.name,
+                    completed: task.completed,
+                  },
+                  index: index,
+                })
+                handleOpenDialog()
+              }}>
+                <ListItemText primary={task.name} sx={{ color: "#333" }} />
               </ListItemButton>
               <IconButton onClick={() => handleDeleteTask(index)}>
                 <DeleteIcon sx={{ color: "#333" }} />
@@ -111,6 +121,13 @@ const TodoList = () => {
             </ListItem>
           ))}
         </List>
+        <TaskDetail
+          isOpen={openDialog}
+          dialogData={dialogData}
+          handleClose={handleCloseDialog}
+          handleTaskCompletion = {handleTaskCompletion}
+          handleDeleteTask = {handleDeleteTask}
+        />
       </Container>
     </Box>
   );
