@@ -19,10 +19,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 const TodoList = () => {
   const [tasks, setTasks] = useState([]);
   const [taskInput, setTaskInput] = useState("");
+  const [descriptionInput, setDescriptionInput] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogData, setDialogData] = useState({
     task: {
       name: "",
+      description: "",
       completed: false,
     },
     index: -1,
@@ -40,10 +42,15 @@ const TodoList = () => {
     setTaskInput(e.target.value);
   };
 
+  const handleDescriptionInputChange = (e) => {
+    setDescriptionInput(e.target.value);
+  };
+
   const handleAddTask = () => {
     if (taskInput.trim() !== "") {
-      setTasks([...tasks, { name: taskInput, completed: false }]);
+      setTasks([...tasks, { name: taskInput, description: descriptionInput, completed: false }]);
       setTaskInput("");
+      setDescriptionInput("");
     }
   };
 
@@ -70,18 +77,27 @@ const TodoList = () => {
           onSubmit={(e) => {
             e.preventDefault();
           }}
-          sx={{ display: "flex", alignItems: "flex-end" }}
+          sx={{
+            display: "flex",
+            alignItems: "flex-end",
+            flexDirection: "column",
+          }}
         >
           <TextField
-            label="New Task"
-            variant="outlined"
+            label="New Task Name"
             size="small"
+            onChange={handleTaskInputChange}
             fullWidth
             value={taskInput}
-            onChange={handleTaskInputChange}
-            sx={{
-              "& .MuiOutlinedInput-notchedOutline": { borderColor: "#ccc" },
-            }}
+          />
+          <TextField
+            label="New Task Description"
+            value={descriptionInput}
+            onChange={handleDescriptionInputChange}
+            fullWidth
+            margin="normal"
+            multiline
+            rows={4}
           />
           <Button
             variant="contained"
@@ -103,16 +119,19 @@ const TodoList = () => {
                   disableRipple
                 />
               </ListItemIcon>
-              <ListItemButton onClick={() => {
-                setDialogData({
-                  task: {
-                    name: task.name,
-                    completed: task.completed,
-                  },
-                  index: index,
-                })
-                handleOpenDialog()
-              }}>
+              <ListItemButton
+                onClick={() => {
+                  setDialogData({
+                    task: {
+                      name: task.name,
+                      description: task.description,
+                      completed: task.completed,
+                    },
+                    index: index,
+                  });
+                  handleOpenDialog();
+                }}
+              >
                 <ListItemText primary={task.name} sx={{ color: "#333" }} />
               </ListItemButton>
               <IconButton onClick={() => handleDeleteTask(index)}>
@@ -125,8 +144,8 @@ const TodoList = () => {
           isOpen={openDialog}
           dialogData={dialogData}
           handleClose={handleCloseDialog}
-          handleTaskCompletion = {handleTaskCompletion}
-          handleDeleteTask = {handleDeleteTask}
+          handleTaskCompletion={handleTaskCompletion}
+          handleDeleteTask={handleDeleteTask}
         />
       </Container>
     </Box>

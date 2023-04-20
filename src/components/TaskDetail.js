@@ -5,6 +5,7 @@ import {
   DialogTitle,
   IconButton,
   Checkbox,
+  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -21,7 +22,7 @@ const TaskDetail = ({
       <Box sx={{ bgcolor: "#f5f5f5", minHeight: "100vh", color: "#333" }}>
         <Container sx={{ py: 8 }}>
           <DialogTitle
-            variant="h2"
+            variant="h4"
             sx={{ display: "flex", justifyContent: "space-between" }}
           >
             {dialogData.task.name}
@@ -47,6 +48,9 @@ const TaskDetail = ({
               </IconButton>
             </span>
           </DialogTitle>
+          <Typography variant="body1">
+            {dialogData.task.description}
+          </Typography>
         </Container>
       </Box>
     </Dialog>
