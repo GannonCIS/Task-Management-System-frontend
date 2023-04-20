@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SignUp from "./SignUp";
+
 
 import {
   Box,
@@ -91,6 +93,10 @@ const Login = () => {
             Create Account
           </Button>
         </Box>
+        <SignUp
+          isOpen={openDialog}
+          handleClose={handleCloseDialog}
+        />
       </Container>
     </Box>
   );
