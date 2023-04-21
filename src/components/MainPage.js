@@ -82,15 +82,11 @@ const TodoList = () => {
 
   return (
     <Box sx={{ bgcolor: "#f5f5f5", minHeight: "100vh", color: "#333" }}>
-      
-      
-      <Dialog />
-      
       <Container sx={{ py: 8 }}>
         <Typography variant="h2" sx={{ mb: 4 }}>
           Todo List
         </Typography>
-        
+        <center><Dialog /></center>
         <Box
           component="form"
           onSubmit={(e) => {

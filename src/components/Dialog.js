@@ -1,4 +1,4 @@
-import * as React from 'react';
+
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -6,45 +6,153 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import React, { useState } from "react";
+import {
+  Checkbox,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  IconButton,
+
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+
+
+
 
 export default function FormDialog() {
   const [open, setOpen] = React.useState(false);
+  const [tasks, setTasks] = useState([]);
+  const [taskInput, setTaskInput] = useState("");
+  const [descriptionInput, setDescriptionInput] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
+  const [dialogData, setDialogData] = useState({
+    task: {
+      name: "",
+      description: "",
+      completed: false,
+    },
+    index: -1,
+  });
+  const handleDeleteTask = (index) => {
+    const updatedTasks = [...tasks];
+    updatedTasks.splice(index, 1);
+    setTasks(updatedTasks);
+  };
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleTaskCompletion = (index) => {
+    const updatedTasks = [...tasks];
+    updatedTasks[index].completed = !updatedTasks[index].completed;
+    setTasks(updatedTasks);
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
   };
+  const handleTaskInputChange = (e) => {
+    setTaskInput(e.target.value);
+  };
 
+  const handleAddTask = () => {
+    if (taskInput.trim() !== "") {
+      setTasks([...tasks, { name: taskInput, description: descriptionInput, completed: false }]);
+      setTaskInput("");
+      setDescriptionInput("");
+    }
+  };
+
+  const handleDescriptionInputChange = (e) => {
+    setDescriptionInput(e.target.value);
+  };
   const handleClose = () => {
     setOpen(false);
   };
 
+
   return (
     <div>
       <Button variant="outlined" onClick={handleClickOpen}>
-        Open form dialog
+        Add a New Task
       </Button>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Subscribe</DialogTitle>
+        <DialogTitle><h3><center>Create a New Task</center></h3></DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To subscribe to this website, please enter your email address here. We
-            will send updates occasionally.
+            Type in new task name and give a description on it.
           </DialogContentText>
           <TextField
             autoFocus
             margin="dense"
             id="name"
-            label="Email Address"
-            type="email"
+            label="Task name"
+            type="Text"
             fullWidth
             variant="standard"
+            onChange={handleTaskInputChange}
+            value={taskInput}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="descri[tion"
+            label="Task Description"
+            type="Text"
+            fullWidth
+            variant="standard"
+            value={descriptionInput}
+            onChange={handleDescriptionInputChange}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleClose}>Subscribe</Button>
+          <Button onClick={() => {
+            handleAddTask();
+            handleClose();
+            }}>Add Task
+            </Button>
         </DialogActions>
       </Dialog>
+      <List sx={{ mt: 4 }}>
+          {tasks.map((task, index) => (
+            <ListItem key={index} disablePadding sx={{ fontSize: "1.5rem" }}>
+              <ListItemIcon onClick={() => handleTaskCompletion(index)}>
+                <Checkbox
+                  edge="start"
+                  checked={task.completed}
+                  tabIndex={-1}
+                  disableRipple
+                />
+              </ListItemIcon>
+              <ListItemButton
+                onClick={() => {
+                  setDialogData({
+                    task: {
+                      name: task.name,
+                      description: task.description,
+                      completed: task.completed,
+                    },
+                    index: index,
+                  });
+                  handleOpenDialog();
+                }}
+              >
+                <ListItemText primary={task.name} sx={{ color: "#333" }} />
+              </ListItemButton>
+              <IconButton onClick={() => handleDeleteTask(index)}>
+                <DeleteIcon sx={{ color: "#333" }} />
+              </IconButton>
+            </ListItem>
+          ))}
+        </List>
     </div>
+    
+
   );
 }
+
