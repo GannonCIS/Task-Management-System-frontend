@@ -5,7 +5,8 @@ import {
   DialogTitle,
   IconButton,
   Checkbox,
-  Typography,
+  TextField,
+  Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -16,7 +17,29 @@ const TaskDetail = ({
   handleClose,
   handleTaskCompletion,
   handleDeleteTask,
+  handleUpdateTask,
+  setDialogData,
 }) => {
+  const handleTitleInputChange = (e) => {
+    setDialogData({
+      ...dialogData,
+      task: {
+        ...dialogData.task,
+        name: e.target.value,
+      },
+    });
+  };
+
+  const handleDescriptionInputChange = (e) => {
+    setDialogData({
+      ...dialogData,
+      task: {
+        ...dialogData.task,
+        description: e.target.value,
+      },
+    });
+  };
+
   return (
     <Dialog open={isOpen} fullScreen={true}>
       <Box sx={{ bgcolor: "#f5f5f5", minHeight: "100vh", color: "#333" }}>
@@ -25,7 +48,15 @@ const TaskDetail = ({
             variant="h4"
             sx={{ display: "flex", justifyContent: "space-between" }}
           >
-            {dialogData.task.name}
+            <TextField
+              value={dialogData.task.name}
+              variant="standard"
+              size="normal"
+              onChange={handleTitleInputChange}
+              InputProps={{
+                style: { fontSize: 40 },
+              }}
+            />
             <span>
               <IconButton
                 onClick={() => {
@@ -48,9 +79,38 @@ const TaskDetail = ({
               </IconButton>
             </span>
           </DialogTitle>
-          <Typography variant="body1">
-            {dialogData.task.description}
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "flex-end",
+              flexDirection: "column",
+            }}
+          >
+            <TextField
+              value={dialogData.task.description}
+              fullWidth
+              onChange={handleDescriptionInputChange}
+              multiline
+              rows={20}
+              size="small"
+              sx={{ pb: 3 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ ml: 2 }}
+              onClick={() => {
+                handleUpdateTask(dialogData.index, {
+                  name: dialogData.task.name,
+                  description: dialogData.task.description,
+                  completed: dialogData.task.completed,
+                });
+                handleClose();
+              }}
+            >
+              Update
+            </Button>
+          </Box>
         </Container>
       </Box>
     </Dialog>
