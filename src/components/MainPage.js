@@ -74,6 +74,12 @@ const TodoList = () => {
     setTasks(updatedTasks);
   };
 
+  const handleUpdateTask = (index, updatedTask) => {
+    const updatedTasks = [...tasks];
+    updatedTasks[index] = updatedTask;
+    setTasks(updatedTasks);
+  };
+
   const handleDeleteTask = (index) => {
     const updatedTasks = [...tasks];
     updatedTasks.splice(index, 1);
@@ -160,7 +166,9 @@ const TodoList = () => {
           dialogData={dialogData}
           handleClose={handleCloseDialog}
           handleTaskCompletion={handleTaskCompletion}
+          handleUpdateTask = {handleUpdateTask}
           handleDeleteTask={handleDeleteTask}
+          setDialogData={setDialogData}
         />
       </Container>
     </Box>
