@@ -22,9 +22,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 
 
-export default function FormDialog() {
+const FormDialog = ({
+    tasks,
+    setTasks,
+    }) => { 
+  
   const [open, setOpen] = React.useState(false);
-  const [tasks, setTasks] = useState([]);
   const [taskInput, setTaskInput] = useState("");
   const [descriptionInput, setDescriptionInput] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
@@ -118,41 +121,11 @@ export default function FormDialog() {
             </Button>
         </DialogActions>
       </Dialog>
-      <List sx={{ mt: 4 }}>
-          {tasks.map((task, index) => (
-            <ListItem key={index} disablePadding sx={{ fontSize: "1.5rem" }}>
-              <ListItemIcon onClick={() => handleTaskCompletion(index)}>
-                <Checkbox
-                  edge="start"
-                  checked={task.completed}
-                  tabIndex={-1}
-                  disableRipple
-                />
-              </ListItemIcon>
-              <ListItemButton
-                onClick={() => {
-                  setDialogData({
-                    task: {
-                      name: task.name,
-                      description: task.description,
-                      completed: task.completed,
-                    },
-                    index: index,
-                  });
-                  handleOpenDialog();
-                }}
-              >
-                <ListItemText primary={task.name} sx={{ color: "#333" }} />
-              </ListItemButton>
-              <IconButton onClick={() => handleDeleteTask(index)}>
-                <DeleteIcon sx={{ color: "#333" }} />
-              </IconButton>
-            </ListItem>
-          ))}
-        </List>
     </div>
     
 
   );
-}
+};
+
+export default FormDialog;
 

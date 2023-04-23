@@ -92,7 +92,9 @@ const TodoList = () => {
         <Typography variant="h2" sx={{ mb: 4 }}>
           Todo List
         </Typography>
-        <center><Dialog /></center>
+        <Dialog 
+          tasks={tasks}
+          setTasks={setTasks}/>
         <Box
           component="form"
           onSubmit={(e) => {
