@@ -7,17 +7,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import React, { useState } from "react";
-import {
-  Checkbox,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  IconButton,
-
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 
 
 
@@ -30,30 +19,7 @@ const FormDialog = ({
   const [open, setOpen] = React.useState(false);
   const [taskInput, setTaskInput] = useState("");
   const [descriptionInput, setDescriptionInput] = useState("");
-  const [openDialog, setOpenDialog] = useState(false);
-  const [dialogData, setDialogData] = useState({
-    task: {
-      name: "",
-      description: "",
-      completed: false,
-    },
-    index: -1,
-  });
-  const handleDeleteTask = (index) => {
-    const updatedTasks = [...tasks];
-    updatedTasks.splice(index, 1);
-    setTasks(updatedTasks);
-  };
-
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
-  const handleTaskCompletion = (index) => {
-    const updatedTasks = [...tasks];
-    updatedTasks[index].completed = !updatedTasks[index].completed;
-    setTasks(updatedTasks);
-  };
+  
 
   const handleClickOpen = () => {
     setOpen(true);

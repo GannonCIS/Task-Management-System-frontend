@@ -15,12 +15,16 @@ import {
   IconButton,
 
 } from "@mui/material";
-import Dialog from "./Dialog.js"
+import FormDialog from "./TaskDialog.js";
+import ProjectDialogbutton from "./ProjectDialog.js";
+
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const TodoList = () => {
+  const[projects,setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [taskInput, setTaskInput] = useState("");
+  const [projectInput, setProjectInput] = useState("");
   const [descriptionInput, setDescriptionInput] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   //my part
@@ -56,6 +60,11 @@ const TodoList = () => {
     setTaskInput(e.target.value);
   };
 
+  //
+  const handleProjectInputChange = (e) => {
+    setProjectInput(e.target.value);
+  };
+
   const handleDescriptionInputChange = (e) => {
     setDescriptionInput(e.target.value);
   };
@@ -67,11 +76,26 @@ const TodoList = () => {
       setDescriptionInput("");
     }
   };
+  //
+  const handleAddProject = () => {
+    if (taskInput.trim() !== "") {
+      setProjects([...projects, { name: projectInput, description: descriptionInput, completed: false }]);
+      setProjectInput("");
+      setDescriptionInput("");
+    }
+  };
+  
 
   const handleTaskCompletion = (index) => {
     const updatedTasks = [...tasks];
     updatedTasks[index].completed = !updatedTasks[index].completed;
     setTasks(updatedTasks);
+  };
+  //
+  const handleProjectCompletion = (index) => {
+    const updatedProjects = [...projects];
+    updatedProjects[index].completed = !updatedProjects[index].completed;
+    setProjects(updatedProjects);
   };
 
   const handleUpdateTask = (index, updatedTask) => {
@@ -79,11 +103,25 @@ const TodoList = () => {
     updatedTasks[index] = updatedTask;
     setTasks(updatedTasks);
   };
+  //
+  // const handleUpdateProjects = (index, updatedProjects) => {
+  //   const updatedProjects = [...projects];
+  //   updatedProjects[index] = updatedProjects;
+  //   setProjects(updatedProjects);
+  // };
+  
+
 
   const handleDeleteTask = (index) => {
     const updatedTasks = [...tasks];
     updatedTasks.splice(index, 1);
     setTasks(updatedTasks);
+  };
+  //
+  const handleDeleteProject = (index) => {
+    const updatedProjects = [...projects];
+    updatedProjects.splice(index, 1);
+    setProjects(updatedProjects);
   };
 
   return (
@@ -92,45 +130,15 @@ const TodoList = () => {
         <Typography variant="h2" sx={{ mb: 4 }}>
           Todo List
         </Typography>
-        <Dialog 
+        <center><FormDialog 
           tasks={tasks}
-          setTasks={setTasks}/>
-        <Box
-          component="form"
-          onSubmit={(e) => {
-            e.preventDefault();
-          }}
-          sx={{
-            display: "flex",
-            alignItems: "flex-end",
-            flexDirection: "column",
-          }}
-        >
-          <TextField
-            label="New Task Name"
-            size="small"
-            onChange={handleTaskInputChange}
-            fullWidth
-            value={taskInput}
-          />
-          <TextField
-            label="New Task Description"
-            value={descriptionInput}
-            onChange={handleDescriptionInputChange}
-            fullWidth
-            margin="normal"
-            multiline
-            rows={4}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ ml: 2 }}
-            onClick={handleAddTask}
-          >
-            Add
-          </Button>
-        </Box>
+          setTasks={setTasks} /></center>
+        <br></br>
+        <center><ProjectDialogbutton
+          projects={projects}
+          setProjects={setProjects} /></center>
+
+        
         <List sx={{ mt: 4 }}>
           {tasks.map((task, index) => (
             <ListItem key={index} disablePadding sx={{ fontSize: "1.5rem" }}>
@@ -163,6 +171,75 @@ const TodoList = () => {
             </ListItem>
           ))}
         </List>
+        
+        <List sx={{ mt: 4 }}>
+          {projects.map((task, index) => (
+            <ListItem key={index} disablePadding sx={{ fontSize: "1.5rem" }}>
+              <ListItemIcon onClick={() => handleProjectCompletion(index)}>
+                <Checkbox
+                  edge="start"
+                  checked={projects.completed}
+                  tabIndex={-1}
+                  disableRipple
+                />
+              </ListItemIcon>
+              <ListItemButton
+                onClick={() => {
+                  setDialogData({
+                    task: {
+                      name: task.name,
+                      description: task.description,
+                      completed: task.completed,
+                    },
+                    index: index,
+                  });
+                  handleOpenDialog();
+                }}
+              >
+                <ListItemText primary={task.name} sx={{ color: "#333" }} />
+              </ListItemButton>
+              <IconButton onClick={() => handleDeleteProject(index)}>
+                <DeleteIcon sx={{ color: "#333" }} />
+              </IconButton>
+            </ListItem>
+          ))}
+        </List>
+
+
+        {/* <List sx={{ mt: 4 }}>
+          {tasks.map((task, index) => (
+            <ListItem key={index} disablePadding sx={{ fontSize: "1.5rem" }}>
+              <ListItemIcon onClick={() => handleTaskCompletion(index)}>
+                <Checkbox
+                  edge="start"
+                  checked={task.completed}
+                  tabIndex={-1}
+                  disableRipple
+                />
+              </ListItemIcon>
+              <ListItemButton
+                onClick={() => {
+                  setDialogData({
+                    task: {
+                      name: task.name,
+                      description: task.description,
+                      completed: task.completed,
+                    },
+                    index: index,
+                  });
+                  handleOpenDialog();
+                }}
+              >
+                <ListItemText primary={task.name} sx={{ color: "#333" }} />
+              </ListItemButton>
+              <IconButton onClick={() => handleDeleteTask(index)}>
+                <DeleteIcon sx={{ color: "#333" }} />
+              </IconButton>
+            </ListItem>
+          ))}
+        </List> */}
+
+
         <TaskDetail
           isOpen={openDialog}
           dialogData={dialogData}
