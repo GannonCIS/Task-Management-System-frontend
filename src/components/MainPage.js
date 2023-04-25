@@ -72,6 +72,7 @@ const TodoList = () => {
         name: taskInput,
         description: descriptionInput,
         completed: false,
+        projectId: "None"
       };
       setTasks([...tasks, newTask]);
       setTaskInput("");
@@ -126,6 +127,7 @@ const TodoList = () => {
     setID(event.target.value);
   };
 
+
   const handleAddTaskToProject = () => {
     if (taskInput.trim() && ID !== "") {
       const newTask = {
@@ -135,18 +137,22 @@ const TodoList = () => {
         completed: false,
         projectId: ID // assign the selected project id to the new task
       };
-      setTasks([...tasks, newTask]);
+      setTasks((prevTasks) => [...prevTasks, newTask]); // use functional update for tasks state
       setTaskInput("");
       setDescriptionInput("");
-      const updatedTasksByProjects = tasksByProjects.map(project => {
-        if (project[0] === ID) {
-          return [...project, newTask.id]
-        }
-        return project;
-      })
-      setTasksByProjects(updatedTasksByProjects);
+      setTasksByProjects((prevTasksByProjects) =>
+        prevTasksByProjects.map(project => {
+          if (project[0] === ID) {
+            return [...project, newTask.id]
+          }
+          return project;
+        })
+      ); // use functional update for tasksByProjects state
     }
+
+    console.log(tasksByProjects)
   };
+  
 
   const [tasksByProjects, setTasksByProjects] = React.useState(
     projects.map(project => [project.id])
@@ -307,7 +313,6 @@ const TodoList = () => {
         <List sx={{ mt: 4 }}>
           {alignment === "projects" && projects.map((project, index) => (
             <ListItem key={index} disablePadding sx={{ fontSize: "1.5rem" }}>
-
               <ListItemIcon onClick={() => handleProjectCompletion(index)}>
                 <Checkbox
                   edge="start"
@@ -325,8 +330,23 @@ const TodoList = () => {
                   defaultExpandIcon={<ChevronRightIcon />}
                   sx={{ overflowX: "hidden" }}
                 >
-                  <TreeItem nodeId="1" label={`${project.name} - ProjectID:${project.id}`}>
-                    <TreeItem nodeId="2" label="Task 1" sx={{ fontSize: "1.5rem" }} />
+
+                  
+                  <TreeItem nodeId={project.name} label={`${project.name} - ProjectID:${project.id}`}>
+
+                    {tasks.map((task, index) => {
+                        if (task.projectId === project.name) {
+                          return (
+                            <TreeItem
+                              nodeId={task.id.toString()}
+                              label={task.name}
+                              sx={{ fontSize: "1.5rem" }}
+                              key={index} // Add a unique key prop for each rendered item
+                            />
+                          );
+                        }
+                        return null; // or any other fallback value, depending on your use case
+                      })}
                   </TreeItem>
 
                 </TreeView>
