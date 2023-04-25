@@ -100,10 +100,13 @@ const TaskDetail = ({
               color="primary"
               sx={{ ml: 2 }}
               onClick={() => {
+                console.log(dialogData.task)
                 handleUpdateTask(dialogData.index, {
                   name: dialogData.task.name,
                   description: dialogData.task.description,
                   completed: dialogData.task.completed,
+                  id: dialogData.task.id,
+                  projectId: dialogData.task.projectId
                 });
                 handleClose();
               }}

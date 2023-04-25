@@ -41,6 +41,8 @@ const TodoList = () => {
       name: "",
       description: "",
       completed: false,
+      id: "",
+      projectId: ""
     },
     index: -1,
   });
@@ -296,6 +298,8 @@ const TodoList = () => {
                       name: task.name,
                       description: task.description,
                       completed: task.completed,
+                      id: task.id,
+                      projectId: task.projectId
                     },
                     index: index,
                   });
