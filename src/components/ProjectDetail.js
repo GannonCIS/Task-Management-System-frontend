@@ -20,7 +20,7 @@ import {
     handleUpdateProjects,
     setProjectDialogData,
   }) => {
-    const handleTitleInputChange = (e) => {
+    const handleProjectTitleInputChange = (e) => {
       setProjectDialogData({
         ...dialogProjectData,
         project: {
@@ -30,7 +30,7 @@ import {
       });
     };
   
-    const handleDescriptionInputChange = (e) => {
+    const handleProjectDescriptionInputChange = (e) => {
       setProjectDialogData({
         ...dialogProjectData,
         project: {
@@ -52,7 +52,7 @@ import {
                 value={dialogProjectData.project.name}
                 variant="standard"
                 size="normal"
-                onChange={handleTitleInputChange}
+                onChange={handleProjectTitleInputChange}
                 InputProps={{
                   style: { fontSize: 40 },
                 }}
@@ -89,7 +89,7 @@ import {
               <TextField
                 value={dialogProjectData.project.description}
                 fullWidth
-                onChange={handleDescriptionInputChange}
+                onChange={handleProjectDescriptionInputChange}
                 multiline
                 rows={20}
                 size="small"
