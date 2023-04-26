@@ -16,6 +16,7 @@ import {
 
 } from "@mui/material";
 import FormDialog from "./TaskDialog.js";
+import ProjectDetail from "./ProjectDetail";
 import ProjectDialogbutton from "./ProjectDialog.js";
 
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -26,7 +27,9 @@ const TodoList = () => {
   const [taskInput, setTaskInput] = useState("");
   const [projectInput, setProjectInput] = useState("");
   const [descriptionInput, setDescriptionInput] = useState("");
+  const [projectDescriptionInput, setProjectDescriptionInput] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [openProjectDialog, setOpenProjectDialog] = useState(false);
   //my part
   const [open, setOpen] = React.useState(false);
   //
@@ -38,9 +41,22 @@ const TodoList = () => {
     },
     index: -1,
   });
+
+  const [dialogProjectData, setProjectDialogData] = useState({
+    project: {
+      name: "",
+      description: "",
+      completed: false,
+    },
+    index: -1,
+  });
   
   const handleOpenDialog = () => {
-    setOpenDialog(true);
+    setOpenProjectDialog(true);
+  };
+
+  const handleOpenProjectDialog = () => {
+    setOpenProjectDialog(true);
   };
   // my part
   const handleClickOpen = () => {
@@ -56,6 +72,10 @@ const TodoList = () => {
     setOpenDialog(false);
   };
 
+  const handleCloseProjectDialog = () => {
+    setOpenProjectDialog(false);
+  };
+
   const handleTaskInputChange = (e) => {
     setTaskInput(e.target.value);
   };
@@ -69,6 +89,10 @@ const TodoList = () => {
     setDescriptionInput(e.target.value);
   };
 
+  const handleProjectDescriptionInputChange = (e) => {
+    setProjectDescriptionInput(e.target.value);
+  };
+
   const handleAddTask = () => {
     if (taskInput.trim() !== "") {
       setTasks([...tasks, { name: taskInput, description: descriptionInput, completed: false }]);
@@ -79,7 +103,7 @@ const TodoList = () => {
   //
   const handleAddProject = () => {
     if (taskInput.trim() !== "") {
-      setProjects([...projects, { name: projectInput, description: descriptionInput, completed: false }]);
+      setProjects([...projects, { name: projectInput, description: projectDescriptionInput, completed: false }]);
       setProjectInput("");
       setDescriptionInput("");
     }
@@ -104,11 +128,11 @@ const TodoList = () => {
     setTasks(updatedTasks);
   };
   //
-  // const handleUpdateProjects = (index, updatedProjects) => {
-  //   const updatedProjects = [...projects];
-  //   updatedProjects[index] = updatedProjects;
-  //   setProjects(updatedProjects);
-  // };
+  const handleUpdateProjects = (index, updatedProjects) => {
+    updatedProjects = [...projects];
+    updatedProjects[index] = updatedProjects;
+    setProjects(updatedProjects);
+  };
   
 
 
@@ -173,30 +197,30 @@ const TodoList = () => {
         </List>
         
         <List sx={{ mt: 4 }}>
-          {projects.map((task, index) => (
+          {projects.map((project, index) => (
             <ListItem key={index} disablePadding sx={{ fontSize: "1.5rem" }}>
               <ListItemIcon onClick={() => handleProjectCompletion(index)}>
                 <Checkbox
                   edge="start"
-                  checked={projects.completed}
+                  checked={project.completed}
                   tabIndex={-1}
                   disableRipple
                 />
               </ListItemIcon>
               <ListItemButton
                 onClick={() => {
-                  setDialogData({
-                    task: {
-                      name: task.name,
-                      description: task.description,
-                      completed: task.completed,
+                  setProjectDialogData({
+                    project: {
+                      name: project.name,
+                      description: project.description,
+                      completed: project.completed,
                     },
                     index: index,
                   });
                   handleOpenDialog();
                 }}
               >
-                <ListItemText primary={task.name} sx={{ color: "#333" }} />
+                <ListItemText primary={project.name} sx={{ color: "#333" }} />
               </ListItemButton>
               <IconButton onClick={() => handleDeleteProject(index)}>
                 <DeleteIcon sx={{ color: "#333" }} />
@@ -249,6 +273,17 @@ const TodoList = () => {
           handleDeleteTask={handleDeleteTask}
           setDialogData={setDialogData}
         />
+
+        <ProjectDetail 
+          isOpen={openProjectDialog}
+          dialogProjectData={dialogProjectData}
+          handleClose={handleCloseProjectDialog}
+          handleProjectCompletion={handleProjectCompletion}
+          handleUpdateProjects = {handleUpdateProjects}
+          handleDeleteProject={handleDeleteProject}
+          setProjectDialogData={setProjectDialogData}
+        />
+
       </Container>
     </Box>
   );

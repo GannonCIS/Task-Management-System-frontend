@@ -13,7 +13,8 @@ const ProjectDialogbutton = ({
     }) => { 
         const [open, setOpen] = React.useState(false);
         const [projectInput, setProjectInput] = useState("");
-        const [descriptionInput, setDescriptionInput] = useState("");
+        // const [descriptionInput, setDescriptionInput] = useState("");
+        const [projectDescriptionInput, setProjectDescriptionInput] = useState("");
         const [openDialog, setOpenDialog] = useState(false);
 
         const handleClickOpen = () => {
@@ -27,14 +28,14 @@ const ProjectDialogbutton = ({
 
         const handleAddProject = () => {
             if (projectInput.trim() !== "") {
-              setProjects([...projects, { name: projectInput, description: descriptionInput, completed: false }]);
+              setProjects([...projects, { name: projectInput, description: projectDescriptionInput, completed: false }]);
               setProjectInput("");
-              setDescriptionInput("");
+              setProjectDescriptionInput("");
             }
         };
         
-        const handleDescriptionInputChange = (e) => {
-            setDescriptionInput(e.target.value);
+        const handleProjectDescriptionInputChange = (e) => {
+            setProjectDescriptionInput(e.target.value);
         };
         
         const handleClose = () => {
@@ -66,13 +67,13 @@ const ProjectDialogbutton = ({
                   <TextField
                     autoFocus
                     margin="dense"
-                    id="descri[tion"
+                    id="description"
                     label="Project Description"
                     type="Text"
                     fullWidth
                     variant="standard"
-                    value={descriptionInput}
-                    onChange={handleDescriptionInputChange}
+                    value={projectDescriptionInput}
+                    onChange={handleProjectDescriptionInputChange}
                   />
                 </DialogContent>
                 <DialogActions>
