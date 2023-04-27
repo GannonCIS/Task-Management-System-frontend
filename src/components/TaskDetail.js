@@ -15,7 +15,6 @@ const TaskDetail = ({
   isOpen,
   dialogData,
   handleClose,
-  handleTaskCompletion,
   handleDeleteTask,
   handleUpdateTask,
   setDialogData,
@@ -23,20 +22,14 @@ const TaskDetail = ({
   const handleTitleInputChange = (e) => {
     setDialogData({
       ...dialogData,
-      task: {
-        ...dialogData.task,
-        name: e.target.value,
-      },
+      name: e.target.value,
     });
   };
 
   const handleDescriptionInputChange = (e) => {
     setDialogData({
       ...dialogData,
-      task: {
-        ...dialogData.task,
-        description: e.target.value,
-      },
+      description: e.target.value,
     });
   };
 
@@ -49,7 +42,7 @@ const TaskDetail = ({
             sx={{ display: "flex", justifyContent: "space-between" }}
           >
             <TextField
-              value={dialogData.task.name}
+              value={dialogData.name}
               variant="standard"
               size="normal"
               onChange={handleTitleInputChange}
@@ -60,15 +53,20 @@ const TaskDetail = ({
             <span>
               <IconButton
                 onClick={() => {
-                  handleTaskCompletion(dialogData.index);
+                  handleUpdateTask({
+                    ...dialogData,
+                    name: dialogData.name,
+                    description: dialogData.description,
+                    completed: !dialogData.completed,
+                  });
                   handleClose();
                 }}
               >
-                <Checkbox checked={dialogData.task.completed} disableRipple />
+                <Checkbox checked={dialogData.completed} disableRipple />
               </IconButton>
               <IconButton
                 onClick={() => {
-                  handleDeleteTask(dialogData.index);
+                  handleDeleteTask(dialogData._id);
                   handleClose();
                 }}
               >
@@ -87,7 +85,7 @@ const TaskDetail = ({
             }}
           >
             <TextField
-              value={dialogData.task.description}
+              value={dialogData.description}
               fullWidth
               onChange={handleDescriptionInputChange}
               multiline
@@ -100,10 +98,11 @@ const TaskDetail = ({
               color="primary"
               sx={{ ml: 2 }}
               onClick={() => {
-                handleUpdateTask(dialogData.index, {
-                  name: dialogData.task.name,
-                  description: dialogData.task.description,
-                  completed: dialogData.task.completed,
+                handleUpdateTask({
+                  ...dialogData,
+                  name: dialogData.name,
+                  description: dialogData.description,
+                  completed: dialogData.completed,
                 });
                 handleClose();
               }}
