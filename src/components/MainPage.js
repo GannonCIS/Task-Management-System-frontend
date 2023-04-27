@@ -34,16 +34,17 @@ const TodoList = () => {
   });
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const getResponse = await api.get("/api/tasks")
-        setTasks(getResponse.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchTasks();
   }, []);
+
+  const fetchTasks = async () => {
+    try {
+      const getResponse = await api.get("/api/tasks");
+      setTasks(getResponse.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -71,8 +72,7 @@ const TodoList = () => {
           completed: false,
         };
         await api.post("/api/tasks", taskPost);
-        const getResponse = await api.get("/api/tasks")
-        setTasks(getResponse.data);
+        fetchTasks();
         setTaskInput("");
         setDescriptionInput("");
       } catch (error) {
@@ -87,10 +87,9 @@ const TodoList = () => {
     setTasks(updatedTasks);
   };
 
-  const handleUpdateTask = (index, updatedTask) => {
-    const updatedTasks = [...tasks];
-    updatedTasks[index] = updatedTask;
-    setTasks(updatedTasks);
+  const handleUpdateTask = async (updatedTask) => {
+    await api.put(`/api/tasks/${updatedTask._id}`, updatedTask);
+    fetchTasks();
   };
 
   const handleDeleteTask = (index) => {
@@ -155,14 +154,11 @@ const TodoList = () => {
               <ListItemButton
                 onClick={() => {
                   setDialogData({
-                    task: {
-                      _id: task._id,
-                      name: task.name,
-                      description: task.description,
-                      completed: task.completed,
-                      __v: task.__v,
-                    },
-                    index: index,
+                    _id: task._id,
+                    name: task.name,
+                    description: task.description,
+                    completed: task.completed,
+                    __v: task.__v,
                   });
                   handleOpenDialog();
                 }}
