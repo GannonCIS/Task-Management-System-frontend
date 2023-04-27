@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TaskDetail from "./TaskDetail";
 import {
   Box,
@@ -15,6 +15,7 @@ import {
   IconButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import api from "../api/api";
 
 const TodoList = () => {
   const [tasks, setTasks] = useState([]);
@@ -23,12 +24,26 @@ const TodoList = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogData, setDialogData] = useState({
     task: {
+      _id: -1,
       name: "",
       description: "",
       completed: false,
+      __v: 0,
     },
     index: -1,
   });
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const getResponse = await api.get("/api/tasks")
+        setTasks(getResponse.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchTasks();
+  }, []);
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -46,11 +61,23 @@ const TodoList = () => {
     setDescriptionInput(e.target.value);
   };
 
-  const handleAddTask = () => {
+  const handleAddTask = async (e) => {
+    e.preventDefault();
     if (taskInput.trim() !== "") {
-      setTasks([...tasks, { name: taskInput, description: descriptionInput, completed: false }]);
-      setTaskInput("");
-      setDescriptionInput("");
+      try {
+        const taskPost = {
+          name: taskInput,
+          description: descriptionInput,
+          completed: false,
+        };
+        await api.post("/api/tasks", taskPost);
+        const getResponse = await api.get("/api/tasks")
+        setTasks(getResponse.data);
+        setTaskInput("");
+        setDescriptionInput("");
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -129,9 +156,11 @@ const TodoList = () => {
                 onClick={() => {
                   setDialogData({
                     task: {
+                      _id: task._id,
                       name: task.name,
                       description: task.description,
                       completed: task.completed,
+                      __v: task.__v,
                     },
                     index: index,
                   });
@@ -151,7 +180,7 @@ const TodoList = () => {
           dialogData={dialogData}
           handleClose={handleCloseDialog}
           handleTaskCompletion={handleTaskCompletion}
-          handleUpdateTask = {handleUpdateTask}
+          handleUpdateTask={handleUpdateTask}
           handleDeleteTask={handleDeleteTask}
           setDialogData={setDialogData}
         />
