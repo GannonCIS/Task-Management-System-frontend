@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TaskDetail from "./TaskDetail";
 import {
   Box,
@@ -15,6 +15,7 @@ import {
   IconButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import api from "../api/api";
 import { TreeView, TreeItem } from "@mui/lab";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -38,14 +39,28 @@ const TodoList = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogData, setDialogData] = useState({
     task: {
+      _id: -1,
       name: "",
       description: "",
       completed: false,
-      id: "",
+      __v: 0,
       projectId: ""
     },
     index: -1,
   });
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  const fetchTasks = async () => {
+    try {
+      const getResponse = await api.get("/api/tasks");
+      setTasks(getResponse.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -67,43 +82,42 @@ const TodoList = () => {
     setProjectInput(e.target.value);
   };
 
-  const handleAddTask = () => {
-    if (taskInput.trim() !== "") {
-      const newTask = {
-        id: tasks.length + 1,
-        name: taskInput,
-        description: descriptionInput,
-        completed: false,
-        projectId: "None"
-      };
-      setTasks([...tasks, newTask]);
-      setTaskInput("");
-      setDescriptionInput("");
-    }
-  };
-
-  const handleTaskCompletion = (index) => {
-    const updatedTasks = [...tasks];
-    updatedTasks[index].completed = !updatedTasks[index].completed;
-    setTasks(updatedTasks);
-  };
-
-  const handleUpdateTask = (index, updatedTask) => {
-    const updatedTasks = [...tasks];
-    updatedTasks[index] = updatedTask;
-    setTasks(updatedTasks);
-  };
-
   const handleProjectCompletion = (index) => {
     const updatedProjects = [...projects];
     updatedProjects[index].completed = !updatedProjects[index].completed;
     setTasks(updatedProjects);
   };
+  
+  const handleAddTask = async (e) => {
+    e.preventDefault();
+    if (taskInput.trim() !== "") {
+      try {
+        const taskPost = {
+          name: taskInput,
+          description: descriptionInput,
+          completed: false,
+          projectId: "None",
+        };
+        await api.post("/api/tasks", taskPost);
+        fetchTasks();
+        setTaskInput("");
+        setDescriptionInput("");
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
 
-  const handleDeleteTask = (index) => {
-    const updatedTasks = [...tasks];
-    updatedTasks.splice(index, 1);
-    setTasks(updatedTasks);
+  const handleUpdateTask = async (updatedTask) => {
+    await api.put(`/api/tasks/${updatedTask._id}`, updatedTask);
+    fetchTasks();
+  };
+
+  
+
+   const handleDeleteTask = async (id) => {
+    await api.delete(`/api/tasks/${id}`);
+    fetchTasks();
   };
 
   const handleDeleteProject = (index) => {
@@ -158,7 +172,6 @@ const TodoList = () => {
       ); // use functional update for tasksByProjects state
     }
 
-    console.log(tasksByProjects)
   };
   
 
@@ -281,8 +294,14 @@ const TodoList = () => {
         <List sx={{ mt: 4 }}>
           {alignment === "tasks" && tasks.map((task, index) => (
             <ListItem key={index} disablePadding sx={{ fontSize: "1.5rem" }}>
-
-              <ListItemIcon onClick={() => handleTaskCompletion(index)}>
+              <ListItemIcon
+                onClick={() =>
+                  handleUpdateTask({
+                    ...task,
+                    completed: !task.completed,
+                  })
+                }
+              >
                 <Checkbox
                   edge="start"
                   checked={task.completed}
@@ -294,14 +313,13 @@ const TodoList = () => {
               <ListItemButton
                 onClick={() => {
                   setDialogData({
-                    task: {
-                      name: task.name,
-                      description: task.description,
-                      completed: task.completed,
-                      id: task.id,
-                      projectId: task.projectId
-                    },
-                    index: index,
+                    _id: task._id,
+                    name: task.name,
+                    description: task.description,
+                    completed: task.completed,
+                      
+                      projectId: task.projectId,
+                    __v: task.__v,
                   });
                   handleOpenDialog();
                 }}
@@ -310,9 +328,7 @@ const TodoList = () => {
                 <ListItemText primary={`TaskID: ${task.id}`} />
                 <ListItemText primary={`Project: ${task.projectId}`} />
               </ListItemButton>
-
-
-              <IconButton onClick={() => handleDeleteTask(index)}>
+              <IconButton onClick={() => handleDeleteTask(task._id)}>
                 <DeleteIcon sx={{ color: "#333" }} />
               </IconButton>
 
@@ -379,8 +395,7 @@ const TodoList = () => {
           isOpen={openDialog}
           dialogData={dialogData}
           handleClose={handleCloseDialog}
-          handleTaskCompletion={handleTaskCompletion}
-          handleUpdateTask = {handleUpdateTask}
+          handleUpdateTask={handleUpdateTask}
           handleDeleteTask={handleDeleteTask}
           setDialogData={setDialogData}
         />
