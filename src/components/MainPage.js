@@ -149,10 +149,7 @@ const TodoList = () => {
 
 
   const handleAddTaskToProject = async() => {
-    console.log("poop")
-    console.log(projectID)
     if (taskInput.trim() && projectID !== "") {
-      console.log("poop2")
       const newTask = {
         name: taskInput,
         description: taskDescriptionInput,
@@ -160,6 +157,7 @@ const TodoList = () => {
         project: projectID // assign the selected project id to the new task
       };
       await api.post("/api/tasks", newTask);
+      fetchTasks();
       setTaskInput("");
       setTaskDescriptionInput("");
     }
@@ -304,7 +302,7 @@ const TodoList = () => {
                         if (task.project === project.name) {
                           return (
                             <TreeItem
-                              nodeId={task.id.toString()}
+                              nodeId={task._id.toString()}
                               label={task.name}
                               sx={{ fontSize: "1.5rem" }}
                               key={index} // Add a unique key prop for each rendered item
