@@ -81,12 +81,6 @@ const TodoList = () => {
     }
   };
 
-  const handleTaskCompletion = (index) => {
-    const updatedTasks = [...tasks];
-    updatedTasks[index].completed = !updatedTasks[index].completed;
-    setTasks(updatedTasks);
-  };
-
   const handleUpdateTask = async (updatedTask) => {
     await api.put(`/api/tasks/${updatedTask._id}`, updatedTask);
     fetchTasks();
@@ -143,7 +137,14 @@ const TodoList = () => {
         <List sx={{ mt: 4 }}>
           {tasks.map((task, index) => (
             <ListItem key={index} disablePadding sx={{ fontSize: "1.5rem" }}>
-              <ListItemIcon onClick={() => handleTaskCompletion(index)}>
+              <ListItemIcon
+                onClick={() =>
+                  handleUpdateTask({
+                    ...task,
+                    completed: !task.completed,
+                  })
+                }
+              >
                 <Checkbox
                   edge="start"
                   checked={task.completed}
@@ -175,7 +176,6 @@ const TodoList = () => {
           isOpen={openDialog}
           dialogData={dialogData}
           handleClose={handleCloseDialog}
-          handleTaskCompletion={handleTaskCompletion}
           handleUpdateTask={handleUpdateTask}
           handleDeleteTask={handleDeleteTask}
           setDialogData={setDialogData}

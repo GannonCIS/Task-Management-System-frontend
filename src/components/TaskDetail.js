@@ -15,7 +15,6 @@ const TaskDetail = ({
   isOpen,
   dialogData,
   handleClose,
-  handleTaskCompletion,
   handleDeleteTask,
   handleUpdateTask,
   setDialogData,
@@ -54,7 +53,12 @@ const TaskDetail = ({
             <span>
               <IconButton
                 onClick={() => {
-                  handleTaskCompletion(dialogData);
+                  handleUpdateTask({
+                    ...dialogData,
+                    name: dialogData.name,
+                    description: dialogData.description,
+                    completed: !dialogData.completed,
+                  });
                   handleClose();
                 }}
               >
