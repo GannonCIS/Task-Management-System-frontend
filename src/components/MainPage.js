@@ -29,13 +29,16 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
+import ProjectDialog from "./ProjectDialog";
+import TaskDialog from "./TaskDialog";
 
 const TodoList = () => {
   const [tasks, setTasks] = useState([]);
   const [taskInput, setTaskInput] = useState("");
   const [projects, setProjects] = useState([]);
   const [projectInput, setProjectInput] = useState("");
-  const [descriptionInput, setDescriptionInput] = useState("");
+  const [taskDescriptionInput, setTaskDescriptionInput] = useState("");
+  const [projectDescriptionInput, setProjectDescriptionInput] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogData, setDialogData] = useState({
     task: {
@@ -75,7 +78,7 @@ const TodoList = () => {
   };
 
   const handleDescriptionInputChange = (e) => {
-    setDescriptionInput(e.target.value);
+    setTaskDescriptionInput(e.target.value);
   };
 
   const handleProjectInputChange = (e) => {
@@ -89,19 +92,18 @@ const TodoList = () => {
   };
   
   const handleAddTask = async (e) => {
-    e.preventDefault();
     if (taskInput.trim() !== "") {
       try {
         const taskPost = {
           name: taskInput,
-          description: descriptionInput,
+          description: taskDescriptionInput,
           completed: false,
-          projectId: "None",
+          project: "None",
         };
         await api.post("/api/tasks", taskPost);
         fetchTasks();
         setTaskInput("");
-        setDescriptionInput("");
+        setTaskDescriptionInput("");
       } catch (error) {
         console.log(error);
       }
@@ -131,53 +133,40 @@ const TodoList = () => {
       const newProject = {
         id: projects.length + 1,
         name: projectInput,
+        description: projectDescriptionInput
       };
       setProjects([...projects, newProject]);
       setProjectInput("");
-      setDescriptionInput("");
+      setProjectDescriptionInput("");
     }
   };
 
 
   const [alignment, setAlignment] = useState("tasks"); // add alignment state
 
-  // ------------------- Selection with correct ID - PART -----------------
-
-  const [ID, setID] = React.useState('');
-
-  const handleChange = (event) => {
-    setID(event.target.value);
-  };
+  const [projectID, setProjectID] = React.useState('');
 
 
-  const handleAddTaskToProject = () => {
-    if (taskInput.trim() && ID !== "") {
+
+  const handleAddTaskToProject = async() => {
+    console.log("poop")
+    console.log(projectID)
+    if (taskInput.trim() && projectID !== "") {
+      console.log("poop2")
       const newTask = {
-        id: tasks.length + 1,
         name: taskInput,
-        description: descriptionInput,
+        description: taskDescriptionInput,
         completed: false,
-        projectId: ID // assign the selected project id to the new task
+        project: projectID // assign the selected project id to the new task
       };
-      setTasks((prevTasks) => [...prevTasks, newTask]); // use functional update for tasks state
+      await api.post("/api/tasks", newTask);
       setTaskInput("");
-      setDescriptionInput("");
-      setTasksByProjects((prevTasksByProjects) =>
-        prevTasksByProjects.map(project => {
-          if (project[0] === ID) {
-            return [...project, newTask.id]
-          }
-          return project;
-        })
-      ); // use functional update for tasksByProjects state
+      setTaskDescriptionInput("");
     }
 
   };
   
 
-  const [tasksByProjects, setTasksByProjects] = React.useState(
-    projects.map(project => [project.id])
-  );
 
 
 
@@ -190,6 +179,8 @@ const TodoList = () => {
           Todo List
         </Typography>
 
+        
+
         <Box
           component="form"
           onSubmit={(e) => {
@@ -197,90 +188,41 @@ const TodoList = () => {
           }}
           sx={{
             display: "flex",
-            alignItems: "flex-end",
+            alignItems: "center",
             flexDirection: "column",
+            gap: 5
           }}
         >
 
-          <TextField
-            label="New Project Name"
-            onChange={handleProjectInputChange}
-            fullWidth
-            value={projectInput}
+        <TaskDialog 
+          tasks={tasks}
+          projectID={projectID}
+          setProjectID={setProjectID}
+          projects={projects}
+          setTasks={setTasks} 
+          taskInput={taskInput}
+          taskDescriptionInput={taskDescriptionInput}
+          setTaskInput={setTaskInput}
+          setTaskDescriptionInput={setTaskDescriptionInput}
+          handleAddTask={handleAddTask}
+          handleAddTaskToProject={handleAddTaskToProject}
           />
-
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ ml: 2, marginTop: 1, marginBottom: 1 }}
-            onClick={handleAddProject}
-          >
-            Add Project
-          </Button>
-
-          <TextField
-            label="New Task Name"
-            size="small"
-            onChange={handleTaskInputChange}
-            fullWidth
-            value={taskInput}
+        
+        <ProjectDialog
+          projects={projects}
+          projectInput={projectInput}
+          projectDescriptionInput={projectDescriptionInput}
+          setProjectInput={setProjectInput}
+          setProjectDescriptionInput={setProjectDescriptionInput}
+          handleAddProject={handleAddProject}
+          setProjects={setProjects} 
           />
-
-          <TextField
-            label="New Task Description"
-            value={descriptionInput}
-            onChange={handleDescriptionInputChange}
-            fullWidth
-            margin="normal"
-            multiline
-            rows={4}
-          />
-
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ ml: 2, marginTop: 1, marginBottom: 1 }}
-            onClick={handleAddTask}
-          >
-            Add
-          </Button>
-
-
-          <FormControl fullWidth>
-            <InputLabel id="project-select-label">Choose to assign to Project</InputLabel>
-            <Select
-              labelId="project-select-label"
-              id="project-select"
-              value={ID}  //is actually the name of the project
-              label={projects.name}
-              onChange={handleChange}
-              sx={{ marginTop: 1, marginBottom: 1 }}
-            >
-
-              <MenuItem value={null}>None</MenuItem>
-
-              {projects.map((project) => (
-                <MenuItem key={project.name} value={project.name}>
-                  {project.name}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ ml: 2, marginTop: 1, marginBottom: 4 }}
-            onClick={handleAddTaskToProject}
-          >
-            Add Task to Project
-          </Button>
-
-
+         
           <ToggleButtonGroup
             value={alignment}
             exclusive
             aria-label="Menu"
-            style={{ margin: '0 auto' }}
+            style={{ margin: '0 auto', }}
             onChange={(event, newAlignment) => {
               setAlignment(newAlignment);
             }}
@@ -317,16 +259,14 @@ const TodoList = () => {
                     name: task.name,
                     description: task.description,
                     completed: task.completed,
-                      
-                      projectId: task.projectId,
+                    project: task.project,
                     __v: task.__v,
                   });
                   handleOpenDialog();
                 }}
               >
                 <ListItemText primary={task.name} sx={{ color: "#333" }} />
-                <ListItemText primary={`TaskID: ${task.id}`} />
-                <ListItemText primary={`Project: ${task.projectId}`} />
+                <ListItemText primary={`Project: ${task.project}`} sx={{textAlign: "right"}}/>
               </ListItemButton>
               <IconButton onClick={() => handleDeleteTask(task._id)}>
                 <DeleteIcon sx={{ color: "#333" }} />
@@ -358,10 +298,10 @@ const TodoList = () => {
                 >
 
                   
-                  <TreeItem nodeId={project.name} label={`${project.name} - ProjectID:${project.id}`}>
+                  <TreeItem nodeId={project.name} label={`${project.name}`}>
 
                     {tasks.map((task, index) => {
-                        if (task.projectId === project.name) {
+                        if (task.project === project.name) {
                           return (
                             <TreeItem
                               nodeId={task.id.toString()}
@@ -371,7 +311,7 @@ const TodoList = () => {
                             />
                           );
                         }
-                        return null; // or any other fallback value, depending on your use case
+                        return null; 
                       })}
                   </TreeItem>
 

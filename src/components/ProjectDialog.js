@@ -5,17 +5,22 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
 import React, { useState } from "react";
 
 const ProjectDialog = ({
     projects,
     setProjects,
+    handleAddProject,
+    projectInput,
+    setProjectInput,
+    projectDescriptionInput,
+    setProjectDescriptionInput
     }) => { 
         const [open, setOpen] = React.useState(false);
-        const [projectInput, setProjectInput] = useState("");
-        // const [descriptionInput, setDescriptionInput] = useState("");
-        const [projectDescriptionInput, setProjectDescriptionInput] = useState("");
-        const [openDialog, setOpenDialog] = useState(false);
 
         const handleClickOpen = () => {
             setOpen(true);
@@ -26,14 +31,6 @@ const ProjectDialog = ({
             setProjectInput(e.target.value);
         };
 
-        const handleAddProject = () => {
-            if (projectInput.trim() !== "") {
-              setProjects([...projects, { name: projectInput, description: projectDescriptionInput, completed: false }]);
-              setProjectInput("");
-              setProjectDescriptionInput("");
-            }
-        };
-        
         const handleProjectDescriptionInputChange = (e) => {
             setProjectDescriptionInput(e.target.value);
         };
@@ -75,6 +72,9 @@ const ProjectDialog = ({
                     value={projectDescriptionInput}
                     onChange={handleProjectDescriptionInputChange}
                   />
+                  <FormControl fullWidth>
+              
+          </FormControl>
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={handleClose}>Cancel</Button>
