@@ -66,7 +66,7 @@ const TaskDetail = ({
               </IconButton>
               <IconButton
                 onClick={() => {
-                  handleDeleteTask(dialogData);
+                  handleDeleteTask(dialogData._id);
                   handleClose();
                 }}
               >

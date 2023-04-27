@@ -86,10 +86,9 @@ const TodoList = () => {
     fetchTasks();
   };
 
-  const handleDeleteTask = (index) => {
-    const updatedTasks = [...tasks];
-    updatedTasks.splice(index, 1);
-    setTasks(updatedTasks);
+  const handleDeleteTask = async (id) => {
+    await api.delete(`/api/tasks/${id}`);
+    fetchTasks();
   };
 
   return (
@@ -166,7 +165,7 @@ const TodoList = () => {
               >
                 <ListItemText primary={task.name} sx={{ color: "#333" }} />
               </ListItemButton>
-              <IconButton onClick={() => handleDeleteTask(index)}>
+              <IconButton onClick={() => handleDeleteTask(task._id)}>
                 <DeleteIcon sx={{ color: "#333" }} />
               </IconButton>
             </ListItem>
