@@ -11,25 +11,34 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const TaskDetail = ({
+const ProjectDetails = ({
   isOpen,
-  dialogData,
+  dialogProjectData,
   handleClose,
-  handleDeleteTask,
-  handleUpdateTask,
-  setDialogData,
+  handleProjectCompletion,
+  handleDeleteProject,
+  handleUpdateProjects,
+  setProjectDialogData,
 }) => {
-  const handleTitleInputChange = (e) => {
-    setDialogData({
-      ...dialogData,
-      name: e.target.value,
+  const handleProjectTitleInputChange = (e) => {
+    setProjectDialogData({
+      ...dialogProjectData,
+      project: {
+        ...dialogProjectData.project,
+        name: e.target.value,
+      },
     });
   };
 
-  const handleDescriptionInputChange = (e) => {
-    setDialogData({
-      ...dialogData,
-      description: e.target.value,
+
+
+  const handleProjectDescriptionInputChange = (e) => {
+    setProjectDialogData({
+      ...dialogProjectData,
+      project: {
+        ...dialogProjectData.project,
+        description: e.target.value,
+      },
     });
   };
 
@@ -42,10 +51,10 @@ const TaskDetail = ({
             sx={{ display: "flex", justifyContent: "space-between" }}
           >
             <TextField
-              value={dialogData.name}
+              value={dialogProjectData.project.name}
               variant="standard"
               size="normal"
-              onChange={handleTitleInputChange}
+              onChange={handleProjectTitleInputChange}
               InputProps={{
                 style: { fontSize: 40 },
               }}
@@ -53,20 +62,15 @@ const TaskDetail = ({
             <span>
               <IconButton
                 onClick={() => {
-                  handleUpdateTask({
-                    ...dialogData,
-                    name: dialogData.name,
-                    description: dialogData.description,
-                    completed: !dialogData.completed,
-                  });
+                  handleProjectCompletion(dialogProjectData.index);
                   handleClose();
                 }}
               >
-                <Checkbox checked={dialogData.completed} disableRipple />
+                <Checkbox checked={dialogProjectData.project.completed} disableRipple />
               </IconButton>
               <IconButton
                 onClick={() => {
-                  handleDeleteTask(dialogData._id);
+                  handleDeleteProject(dialogProjectData.index);
                   handleClose();
                 }}
               >
@@ -85,9 +89,9 @@ const TaskDetail = ({
             }}
           >
             <TextField
-              value={dialogData.description}
+              value={dialogProjectData.project.description}
               fullWidth
-              onChange={handleDescriptionInputChange}
+              onChange={handleProjectDescriptionInputChange}
               multiline
               rows={20}
               size="small"
@@ -98,12 +102,11 @@ const TaskDetail = ({
               color="primary"
               sx={{ ml: 2 }}
               onClick={() => {
-                handleUpdateTask(dialogData.index, {
-                  name: dialogData.task.name,
-                  description: dialogData.task.description,
-                  completed: dialogData.task.completed,
-                  _id: dialogData.task.id,
-                  projectId: dialogData.task.projectId
+                console.log(dialogProjectData)
+                handleUpdateProjects(dialogProjectData.index, {
+                  name: dialogProjectData.project.name,
+                  description: dialogProjectData.project.description,
+                  completed: dialogProjectData.project.completed,
                 });
                 handleClose();
               }}
@@ -117,4 +120,4 @@ const TaskDetail = ({
   );
 };
 
-export default TaskDetail;
+export default ProjectDetails;
