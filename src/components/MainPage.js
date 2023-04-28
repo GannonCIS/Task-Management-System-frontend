@@ -27,42 +27,55 @@ import TaskDialog from "./TaskDialog";
 
 const TodoList = () => {
   const [tasks, setTasks] = useState([]);
-  const [taskInput, setTaskInput] = useState("");
   const [projects, setProjects] = useState([]);
+
+  const [taskInput, setTaskInput] = useState("");
   const [projectInput, setProjectInput] = useState("");
+
   const [taskDescriptionInput, setTaskDescriptionInput] = useState("");
   const [projectDescriptionInput, setProjectDescriptionInput] = useState("");
+
   const [openDialog, setOpenDialog] = useState(false);
   const [openProjectDialog, setOpenProjectDialog] = useState(false);
+
+  const [project, setProject] = React.useState("");
+
   const [dialogData, setDialogData] = useState({
-    task: {
-      _id: -1,
-      name: "",
-      description: "",
-      completed: false,
-      __v: 0,
-      projectId: "",
-    },
-    index: -1,
+    _id: -1,
+    name: "",
+    description: "",
+    completed: false,
+    __v: 0,
+    project: "",
   });
 
   const [dialogProjectData, setProjectDialogData] = useState({
-    project: {
-      name: "",
-      description: "",
-      completed: false,
-    },
-    index: -1,
+    _id: -1,
+    name: "",
+    description: "",
+    completed: false,
+    __v: 0,
+    tasks: [],
   });
 
   useEffect(() => {
     fetchTasks();
+    fetchProjects();
   }, []);
 
   const fetchTasks = async () => {
     try {
       const getResponse = await api.get("/api/tasks");
       setTasks(getResponse.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchProjects = async () => {
+    try {
+      const getResponse = await api.get("/api/projects");
+      setProjects(getResponse.data.projects);
     } catch (error) {
       console.log(error);
     }
@@ -84,24 +97,6 @@ const TodoList = () => {
     setOpenProjectDialog(false);
   };
 
-  const handleTaskInputChange = (e) => {
-    setTaskInput(e.target.value);
-  };
-
-  const handleDescriptionInputChange = (e) => {
-    setTaskDescriptionInput(e.target.value);
-  };
-
-  const handleProjectInputChange = (e) => {
-    setProjectInput(e.target.value);
-  };
-
-  const handleProjectCompletion = (index) => {
-    const updatedProjects = [...projects];
-    updatedProjects[index].completed = !updatedProjects[index].completed;
-    setTasks(updatedProjects);
-  };
-
   const handleAddTask = async (e) => {
     if (taskInput.trim() !== "") {
       try {
@@ -109,7 +104,7 @@ const TodoList = () => {
           name: taskInput,
           description: taskDescriptionInput,
           completed: false,
-          project: "None",
+          project: projectInput === "" ? "None" : projectInput,
         };
         await api.post("/api/tasks", taskPost);
         fetchTasks();
@@ -126,47 +121,44 @@ const TodoList = () => {
     fetchTasks();
   };
 
-  const handleUpdateProjects = (index, updatedProjects) => {
-    updatedProjects = [...projects];
-    updatedProjects[index] = updatedProjects;
-    setProjects(updatedProjects);
-  };
-
   const handleDeleteTask = async (id) => {
     await api.delete(`/api/tasks/${id}`);
     fetchTasks();
   };
 
-  const handleDeleteProject = (index) => {
-    const updatedProjects = [...projects];
-    updatedProjects.splice(index, 1);
-    setProjects(updatedProjects);
-  };
-
-  const handleAddProject = () => {
+  const handleAddProject = async () => {
     if (projectInput.trim() !== "") {
-      const newProject = {
-        id: projects.length + 1,
+      const projectPost = {
         name: projectInput,
         description: projectDescriptionInput,
+        completed: false,
       };
-      setProjects([...projects, newProject]);
+      await api.post("/api/projects", projectPost);
+      fetchProjects();
       setProjectInput("");
       setProjectDescriptionInput("");
     }
   };
 
+  const handleUpdateProject = async (updatedProject) => {
+    await api.put(`/api/projects/${updatedProject._id}`, updatedProject);
+    fetchProjects();
+  };
+
+  const handleDeleteProject = async (id) => {
+    await api.delete(`/api/projects/${id}`);
+    fetchProjects();
+  };
+
   const [alignment, setAlignment] = useState("tasks"); // add alignment state
 
-  const [projectID, setProjectID] = React.useState("");
-
   const handleAddTaskToProject = async () => {
-    if (taskInput.trim() && projectID !== "") {
+    if (taskInput.trim() && project !== "") {
       const newTask = {
         name: taskInput,
         description: taskDescriptionInput,
         completed: false,
-        project: projectID, // assign the selected project id to the new task
+        project: project, // assign the selected project id to the new task
       };
       await api.post("/api/tasks", newTask);
       fetchTasks();
@@ -196,8 +188,8 @@ const TodoList = () => {
         >
           <TaskDialog
             tasks={tasks}
-            projectID={projectID}
-            setProjectID={setProjectID}
+            project={project}
+            setProject={setProject}
             projects={projects}
             setTasks={setTasks}
             taskInput={taskInput}
@@ -282,7 +274,14 @@ const TodoList = () => {
           {alignment === "projects" &&
             projects.map((project, index) => (
               <ListItem key={index} disablePadding sx={{ fontSize: "1.5rem" }}>
-                <ListItemIcon onClick={() => handleProjectCompletion(index)}>
+                <ListItemIcon
+                  onClick={() =>
+                    handleUpdateProject({
+                      ...project,
+                      completed: !project.completed,
+                    })
+                  }
+                >
                   <Checkbox
                     edge="start"
                     checked={project.completed}
@@ -294,12 +293,12 @@ const TodoList = () => {
                 <ListItemButton
                   onClick={() => {
                     setProjectDialogData({
-                      project: {
-                        name: project.name,
-                        description: project.description,
-                        completed: project.completed,
-                      },
-                      index: index,
+                      _id: project._id,
+                      name: project.name,
+                      description: project.description,
+                      completed: project.completed,
+                      __v: project.__v,
+                      tasks: project.tasks,
                     });
                     handleOpenProjectDialog();
                   }}
@@ -312,7 +311,7 @@ const TodoList = () => {
                   >
                     <TreeItem nodeId={project.name} label={`${project.name}`}>
                       {tasks.map((task, index) => {
-                        if (task.project === project.name) {
+                        if (task.project === project._id) {
                           return (
                             <TreeItem
                               nodeId={task._id.toString()}
@@ -328,7 +327,7 @@ const TodoList = () => {
                   </TreeView>
                 </ListItemButton>
 
-                <IconButton onClick={() => handleDeleteProject(index)}>
+                <IconButton onClick={() => handleDeleteProject(project._id)}>
                   <DeleteIcon sx={{ color: "#333" }} />
                 </IconButton>
               </ListItem>
@@ -348,8 +347,7 @@ const TodoList = () => {
           isOpen={openProjectDialog}
           dialogProjectData={dialogProjectData}
           handleClose={handleCloseProjectDialog}
-          handleProjectCompletion={handleProjectCompletion}
-          handleUpdateProjects={handleUpdateProjects}
+          handleUpdateProject={handleUpdateProject}
           handleDeleteProject={handleDeleteProject}
           setProjectDialogData={setProjectDialogData}
         />

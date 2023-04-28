@@ -9,8 +9,6 @@ import FormControl from "@mui/material/FormControl";
 import React from "react";
 
 const ProjectDialog = ({
-  projects,
-  setProjects,
   handleAddProject,
   projectInput,
   setProjectInput,
@@ -41,11 +39,7 @@ const ProjectDialog = ({
         Add a New Project
       </Button>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>
-          <h3>
-            <center>Create a New Project</center>
-          </h3>
-        </DialogTitle>
+        <DialogTitle>Create a New Project</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Type in new Project name and give a description on it.

@@ -58,6 +58,7 @@ const TaskDetail = ({
                     name: dialogData.name,
                     description: dialogData.description,
                     completed: !dialogData.completed,
+                    project: dialogData.project,
                   });
                   handleClose();
                 }}
@@ -98,12 +99,12 @@ const TaskDetail = ({
               color="primary"
               sx={{ ml: 2 }}
               onClick={() => {
-                handleUpdateTask(dialogData.index, {
-                  name: dialogData.task.name,
-                  description: dialogData.task.description,
-                  completed: dialogData.task.completed,
-                  _id: dialogData.task.id,
-                  projectId: dialogData.task.projectId,
+                handleUpdateTask({
+                  ...dialogData,
+                  name: dialogData.name,
+                  description: dialogData.description,
+                  completed: dialogData.completed,
+                  project: dialogData.project,
                 });
                 handleClose();
               }}

@@ -14,18 +14,17 @@ import React from "react";
 const TaskDialog = ({
   projects,
   handleAddTask,
-  handleAddTaskToProject,
   taskInput,
   setTaskInput,
   taskDescriptionInput,
   setTaskDescriptionInput,
-  projectID,
-  setProjectID,
+  project,
+  setProject,
 }) => {
   const [open, setOpen] = React.useState(false);
 
-  const handleChange = (event) => {
-    setProjectID(event.target.value);
+  const handleProjectSelectionChange = (e) => {
+    setProject(e.target.value);
   };
 
   const handleClickOpen = () => {
@@ -33,14 +32,6 @@ const TaskDialog = ({
   };
   const handleTaskInputChange = (e) => {
     setTaskInput(e.target.value);
-  };
-
-  const addTask = () => {
-    if (projectID === "") {
-      handleAddTask();
-    } else {
-      handleAddTaskToProject();
-    }
   };
 
   const handleDescriptionInputChange = (e) => {
@@ -56,11 +47,7 @@ const TaskDialog = ({
         Add a New Task
       </Button>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>
-          <h3>
-            <center>Create a New Task</center>
-          </h3>
-        </DialogTitle>
+        <DialogTitle>Create a New Task</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Type in new task name and give a description on it.
@@ -87,33 +74,12 @@ const TaskDialog = ({
             value={taskDescriptionInput}
             onChange={handleDescriptionInputChange}
           />
-          <FormControl fullWidth>
-            <InputLabel sx={{ mt: 1 }} id="project-select-label">
-              Choose to assign to Project or None to not
-            </InputLabel>
-            <Select
-              labelId="project-select-label"
-              id="project-select"
-              value={projectID} //is actually the name of the project
-              label={projects.name}
-              onChange={handleChange}
-              sx={{ marginTop: 2, marginBottom: 1 }}
-            >
-              <MenuItem value={null}>None</MenuItem>
-
-              {projects.map((project) => (
-                <MenuItem key={project.name} value={project.name}>
-                  {project.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button
             onClick={() => {
-              addTask();
+              handleAddTask();
               handleClose();
             }}
           >
