@@ -4,8 +4,6 @@ import {
   Box,
   Container,
   Typography,
-  TextField,
-  Button,
   Checkbox,
   List,
   ListItem,
@@ -19,16 +17,11 @@ import api from "../api/api";
 import { TreeView, TreeItem } from "@mui/lab";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-// import { Fullscreen } from "@mui/icons-material";
 
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
-// ------------------- Selection with correct ID - PART -----------------
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
+import ProjectDetail from "./ProjectDetail"
 import ProjectDialog from "./ProjectDialog";
 import TaskDialog from "./TaskDialog";
 
@@ -40,6 +33,7 @@ const TodoList = () => {
   const [taskDescriptionInput, setTaskDescriptionInput] = useState("");
   const [projectDescriptionInput, setProjectDescriptionInput] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [openProjectDialog, setOpenProjectDialog] = useState(false);
   const [dialogData, setDialogData] = useState({
     task: {
       _id: -1,
@@ -48,6 +42,15 @@ const TodoList = () => {
       completed: false,
       __v: 0,
       projectId: ""
+    },
+    index: -1,
+  });
+
+  const [dialogProjectData, setProjectDialogData] = useState({
+    project: {
+      name: "",
+      description: "",
+      completed: false,
     },
     index: -1,
   });
@@ -69,8 +72,16 @@ const TodoList = () => {
     setOpenDialog(true);
   };
 
+  const handleOpenProjectDialog = () => {
+    setOpenProjectDialog(true);
+  };
+
   const handleCloseDialog = () => {
     setOpenDialog(false);
+  };
+
+  const handleCloseProjectDialog = () => {
+    setOpenProjectDialog(false);
   };
 
   const handleTaskInputChange = (e) => {
@@ -115,7 +126,11 @@ const TodoList = () => {
     fetchTasks();
   };
 
-  
+  const handleUpdateProjects = (index, updatedProjects) => {
+    updatedProjects = [...projects];
+    updatedProjects[index] = updatedProjects;
+    setProjects(updatedProjects);
+  };
 
    const handleDeleteTask = async (id) => {
     await api.delete(`/api/tasks/${id}`);
@@ -286,7 +301,18 @@ const TodoList = () => {
                 />
               </ListItemIcon>
 
-              <ListItemButton>
+              <ListItemButton
+              onClick={() => {
+                setProjectDialogData({
+                  project: {
+                    name: project.name,
+                    description: project.description,
+                    completed: project.completed,
+                  },
+                  index: index,
+                });
+                handleOpenProjectDialog();
+              }}>
 
                 <TreeView
                   aria-label="project-navigator"
@@ -336,6 +362,16 @@ const TodoList = () => {
           handleUpdateTask={handleUpdateTask}
           handleDeleteTask={handleDeleteTask}
           setDialogData={setDialogData}
+        />
+
+        <ProjectDetail 
+          isOpen={openProjectDialog}
+          dialogProjectData={dialogProjectData}
+          handleClose={handleCloseProjectDialog}
+          handleProjectCompletion={handleProjectCompletion}
+          handleUpdateProjects = {handleUpdateProjects}
+          handleDeleteProject={handleDeleteProject}
+          setProjectDialogData={setProjectDialogData}
         />
 
 
