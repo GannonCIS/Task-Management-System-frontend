@@ -15,13 +15,13 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import api from "../api/api";
 import { TreeView, TreeItem } from "@mui/lab";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
-import ProjectDetail from "./ProjectDetail"
+import ProjectDetail from "./ProjectDetail";
 import ProjectDialog from "./ProjectDialog";
 import TaskDialog from "./TaskDialog";
 
@@ -41,7 +41,7 @@ const TodoList = () => {
       description: "",
       completed: false,
       __v: 0,
-      projectId: ""
+      projectId: "",
     },
     index: -1,
   });
@@ -101,7 +101,7 @@ const TodoList = () => {
     updatedProjects[index].completed = !updatedProjects[index].completed;
     setTasks(updatedProjects);
   };
-  
+
   const handleAddTask = async (e) => {
     if (taskInput.trim() !== "") {
       try {
@@ -132,7 +132,7 @@ const TodoList = () => {
     setProjects(updatedProjects);
   };
 
-   const handleDeleteTask = async (id) => {
+  const handleDeleteTask = async (id) => {
     await api.delete(`/api/tasks/${id}`);
     fetchTasks();
   };
@@ -141,14 +141,14 @@ const TodoList = () => {
     const updatedProjects = [...projects];
     updatedProjects.splice(index, 1);
     setProjects(updatedProjects);
-  }
+  };
 
   const handleAddProject = () => {
     if (projectInput.trim() !== "") {
       const newProject = {
         id: projects.length + 1,
         name: projectInput,
-        description: projectDescriptionInput
+        description: projectDescriptionInput,
       };
       setProjects([...projects, newProject]);
       setProjectInput("");
@@ -156,43 +156,31 @@ const TodoList = () => {
     }
   };
 
-
   const [alignment, setAlignment] = useState("tasks"); // add alignment state
 
-  const [projectID, setProjectID] = React.useState('');
+  const [projectID, setProjectID] = React.useState("");
 
-
-
-  const handleAddTaskToProject = async() => {
+  const handleAddTaskToProject = async () => {
     if (taskInput.trim() && projectID !== "") {
       const newTask = {
         name: taskInput,
         description: taskDescriptionInput,
         completed: false,
-        project: projectID // assign the selected project id to the new task
+        project: projectID, // assign the selected project id to the new task
       };
       await api.post("/api/tasks", newTask);
       fetchTasks();
       setTaskInput("");
       setTaskDescriptionInput("");
     }
-
   };
-  
-
-
-
-
 
   return (
     <Box sx={{ bgcolor: "#f5f5f5", minHeight: "100vh", color: "#333" }}>
       <Container sx={{ py: 8 }}>
-
         <Typography variant="h2" sx={{ mb: 4 }}>
           Todo List
         </Typography>
-
-        
 
         <Box
           component="form"
@@ -203,39 +191,38 @@ const TodoList = () => {
             display: "flex",
             alignItems: "center",
             flexDirection: "column",
-            gap: 5
+            gap: 5,
           }}
         >
+          <TaskDialog
+            tasks={tasks}
+            projectID={projectID}
+            setProjectID={setProjectID}
+            projects={projects}
+            setTasks={setTasks}
+            taskInput={taskInput}
+            taskDescriptionInput={taskDescriptionInput}
+            setTaskInput={setTaskInput}
+            setTaskDescriptionInput={setTaskDescriptionInput}
+            handleAddTask={handleAddTask}
+            handleAddTaskToProject={handleAddTaskToProject}
+          />
 
-        <TaskDialog 
-          tasks={tasks}
-          projectID={projectID}
-          setProjectID={setProjectID}
-          projects={projects}
-          setTasks={setTasks} 
-          taskInput={taskInput}
-          taskDescriptionInput={taskDescriptionInput}
-          setTaskInput={setTaskInput}
-          setTaskDescriptionInput={setTaskDescriptionInput}
-          handleAddTask={handleAddTask}
-          handleAddTaskToProject={handleAddTaskToProject}
+          <ProjectDialog
+            projects={projects}
+            projectInput={projectInput}
+            projectDescriptionInput={projectDescriptionInput}
+            setProjectInput={setProjectInput}
+            setProjectDescriptionInput={setProjectDescriptionInput}
+            handleAddProject={handleAddProject}
+            setProjects={setProjects}
           />
-        
-        <ProjectDialog
-          projects={projects}
-          projectInput={projectInput}
-          projectDescriptionInput={projectDescriptionInput}
-          setProjectInput={setProjectInput}
-          setProjectDescriptionInput={setProjectDescriptionInput}
-          handleAddProject={handleAddProject}
-          setProjects={setProjects} 
-          />
-         
+
           <ToggleButtonGroup
             value={alignment}
             exclusive
             aria-label="Menu"
-            style={{ margin: '0 auto', }}
+            style={{ margin: "0 auto" }}
             onChange={(event, newAlignment) => {
               setAlignment(newAlignment);
             }}
@@ -243,88 +230,88 @@ const TodoList = () => {
             <ToggleButton value="tasks">Tasks</ToggleButton>
             <ToggleButton value="projects">Projects</ToggleButton>
           </ToggleButtonGroup>
-
         </Box>
 
         <List sx={{ mt: 4 }}>
-          {alignment === "tasks" && tasks.map((task, index) => (
-            <ListItem key={index} disablePadding sx={{ fontSize: "1.5rem" }}>
-              <ListItemIcon
-                onClick={() =>
-                  handleUpdateTask({
-                    ...task,
-                    completed: !task.completed,
-                  })
-                }
-              >
-                <Checkbox
-                  edge="start"
-                  checked={task.completed}
-                  tabIndex={-1}
-                  disableRipple
-                />
-              </ListItemIcon>
+          {alignment === "tasks" &&
+            tasks.map((task, index) => (
+              <ListItem key={index} disablePadding sx={{ fontSize: "1.5rem" }}>
+                <ListItemIcon
+                  onClick={() =>
+                    handleUpdateTask({
+                      ...task,
+                      completed: !task.completed,
+                    })
+                  }
+                >
+                  <Checkbox
+                    edge="start"
+                    checked={task.completed}
+                    tabIndex={-1}
+                    disableRipple
+                  />
+                </ListItemIcon>
 
-              <ListItemButton
-                onClick={() => {
-                  setDialogData({
-                    _id: task._id,
-                    name: task.name,
-                    description: task.description,
-                    completed: task.completed,
-                    project: task.project,
-                    __v: task.__v,
-                  });
-                  handleOpenDialog();
-                }}
-              >
-                <ListItemText primary={task.name} sx={{ color: "#333" }} />
-                <ListItemText primary={`Project: ${task.project}`} sx={{textAlign: "right"}}/>
-              </ListItemButton>
-              <IconButton onClick={() => handleDeleteTask(task._id)}>
-                <DeleteIcon sx={{ color: "#333" }} />
-              </IconButton>
-
-            </ListItem>
-          ))}
+                <ListItemButton
+                  onClick={() => {
+                    setDialogData({
+                      _id: task._id,
+                      name: task.name,
+                      description: task.description,
+                      completed: task.completed,
+                      project: task.project,
+                      __v: task.__v,
+                    });
+                    handleOpenDialog();
+                  }}
+                >
+                  <ListItemText primary={task.name} sx={{ color: "#333" }} />
+                  <ListItemText
+                    primary={`Project: ${task.project}`}
+                    sx={{ textAlign: "right" }}
+                  />
+                </ListItemButton>
+                <IconButton onClick={() => handleDeleteTask(task._id)}>
+                  <DeleteIcon sx={{ color: "#333" }} />
+                </IconButton>
+              </ListItem>
+            ))}
         </List>
 
         <List sx={{ mt: 4 }}>
-          {alignment === "projects" && projects.map((project, index) => (
-            <ListItem key={index} disablePadding sx={{ fontSize: "1.5rem" }}>
-              <ListItemIcon onClick={() => handleProjectCompletion(index)}>
-                <Checkbox
-                  edge="start"
-                  checked={project.completed}
-                  tabIndex={-1}
-                  disableRipple
-                />
-              </ListItemIcon>
+          {alignment === "projects" &&
+            projects.map((project, index) => (
+              <ListItem key={index} disablePadding sx={{ fontSize: "1.5rem" }}>
+                <ListItemIcon onClick={() => handleProjectCompletion(index)}>
+                  <Checkbox
+                    edge="start"
+                    checked={project.completed}
+                    tabIndex={-1}
+                    disableRipple
+                  />
+                </ListItemIcon>
 
-              <ListItemButton
-              onClick={() => {
-                setProjectDialogData({
-                  project: {
-                    name: project.name,
-                    description: project.description,
-                    completed: project.completed,
-                  },
-                  index: index,
-                });
-                handleOpenProjectDialog();
-              }}>
-
-                <TreeView
-                  aria-label="project-navigator"
-                  defaultCollapseIcon={<ExpandMoreIcon />}
-                  defaultExpandIcon={<ChevronRightIcon />}
-                  sx={{ overflowX: "hidden" }}
+                <ListItemButton
+                  onClick={() => {
+                    setProjectDialogData({
+                      project: {
+                        name: project.name,
+                        description: project.description,
+                        completed: project.completed,
+                      },
+                      index: index,
+                    });
+                    handleOpenProjectDialog();
+                  }}
                 >
-
-                  
-                  <TreeItem nodeId={project.name} label={`${project.name}`}>
-
-                    {tasks.map((task, index) => {
+                  <TreeView
+                    aria-label="project-navigator"
+                    defaultCollapseIcon={<ExpandMoreIcon />}
+                    defaultExpandIcon={<ChevronRightIcon />}
+                    sx={{ overflowX: "hidden" }}
+                  >
+                    <TreeItem nodeId={project.name} label={`${project.name}`}>
+                      {tasks.map((task, index) => {
                         if (task.project === project.name) {
                           return (
                             <TreeItem
@@ -335,25 +322,18 @@ const TodoList = () => {
                             />
                           );
                         }
-                        return null; 
+                        return null;
                       })}
-                  </TreeItem>
+                    </TreeItem>
+                  </TreeView>
+                </ListItemButton>
 
-                </TreeView>
-
-              </ListItemButton>
-
-
-              <IconButton onClick={() => handleDeleteProject(index)}>
-                <DeleteIcon sx={{ color: "#333" }} />
-              </IconButton>
-
-            </ListItem>
-          ))}
+                <IconButton onClick={() => handleDeleteProject(index)}>
+                  <DeleteIcon sx={{ color: "#333" }} />
+                </IconButton>
+              </ListItem>
+            ))}
         </List>
-
-
-
 
         <TaskDetail
           isOpen={openDialog}
@@ -364,19 +344,17 @@ const TodoList = () => {
           setDialogData={setDialogData}
         />
 
-        <ProjectDetail 
+        <ProjectDetail
           isOpen={openProjectDialog}
           dialogProjectData={dialogProjectData}
           handleClose={handleCloseProjectDialog}
           handleProjectCompletion={handleProjectCompletion}
-          handleUpdateProjects = {handleUpdateProjects}
+          handleUpdateProjects={handleUpdateProjects}
           handleDeleteProject={handleDeleteProject}
           setProjectDialogData={setProjectDialogData}
         />
-
-
       </Container>
-    </Box >
+    </Box>
   );
 };
 

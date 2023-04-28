@@ -103,7 +103,7 @@ const TaskDetail = ({
                   description: dialogData.task.description,
                   completed: dialogData.task.completed,
                   _id: dialogData.task.id,
-                  projectId: dialogData.task.projectId
+                  projectId: dialogData.task.projectId,
                 });
                 handleClose();
               }}

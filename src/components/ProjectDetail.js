@@ -30,8 +30,6 @@ const ProjectDetails = ({
     });
   };
 
-
-
   const handleProjectDescriptionInputChange = (e) => {
     setProjectDialogData({
       ...dialogProjectData,
@@ -66,7 +64,10 @@ const ProjectDetails = ({
                   handleClose();
                 }}
               >
-                <Checkbox checked={dialogProjectData.project.completed} disableRipple />
+                <Checkbox
+                  checked={dialogProjectData.project.completed}
+                  disableRipple
+                />
               </IconButton>
               <IconButton
                 onClick={() => {
@@ -102,7 +103,7 @@ const ProjectDetails = ({
               color="primary"
               sx={{ ml: 2 }}
               onClick={() => {
-                console.log(dialogProjectData)
+                console.log(dialogProjectData);
                 handleUpdateProjects(dialogProjectData.index, {
                   name: dialogProjectData.project.name,
                   description: dialogProjectData.project.description,
