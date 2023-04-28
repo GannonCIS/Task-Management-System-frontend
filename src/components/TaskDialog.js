@@ -24,7 +24,15 @@ const TaskDialog = ({
   const [open, setOpen] = React.useState(false);
 
   const handleProjectSelectionChange = (e) => {
-    setProject(e.target.value);
+    const projectId = e.target.value;
+    if (projectId === "") {
+      setProject(null);
+    } else {
+      const selectedProject = projects.find(
+        (project) => project._id === projectId
+      );
+      setProject(selectedProject);
+    }
   };
 
   const handleClickOpen = () => {
@@ -74,6 +82,26 @@ const TaskDialog = ({
             value={taskDescriptionInput}
             onChange={handleDescriptionInputChange}
           />
+          <FormControl fullWidth>
+            <InputLabel sx={{ mt: 1 }} id="project-select-label">
+              Choose to assign to Project or None to not
+            </InputLabel>
+            <Select
+              labelId="project-select-label"
+              id="project-select"
+              value={project ? project._id : ""}
+              label={projects.name}
+              onChange={handleProjectSelectionChange}
+              sx={{ marginTop: 2, marginBottom: 1 }}
+            >
+              <MenuItem value="">None</MenuItem>
+              {projects.map((project) => (
+                <MenuItem key={project._id} value={project._id}>
+                  {project.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>

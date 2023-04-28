@@ -38,7 +38,7 @@ const TodoList = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openProjectDialog, setOpenProjectDialog] = useState(false);
 
-  const [project, setProject] = React.useState("");
+  const [project, setProject] = React.useState(null);
 
   const [dialogData, setDialogData] = useState({
     _id: -1,
@@ -46,7 +46,7 @@ const TodoList = () => {
     description: "",
     completed: false,
     __v: 0,
-    project: "",
+    project: null,
   });
 
   const [dialogProjectData, setProjectDialogData] = useState({
@@ -104,15 +104,16 @@ const TodoList = () => {
           name: taskInput,
           description: taskDescriptionInput,
           completed: false,
-          project: projectInput === "" ? "None" : projectInput,
+          project: project ? project._id : "",
         };
+        console.log(taskPost);
         await api.post("/api/tasks", taskPost);
-        fetchTasks();
-        setTaskInput("");
-        setTaskDescriptionInput("");
       } catch (error) {
         console.log(error);
       }
+      fetchTasks();
+      setTaskInput("");
+      setTaskDescriptionInput("");
     }
   };
 
@@ -158,7 +159,7 @@ const TodoList = () => {
         name: taskInput,
         description: taskDescriptionInput,
         completed: false,
-        project: project, // assign the selected project id to the new task
+        project: project._id,
       };
       await api.post("/api/tasks", newTask);
       fetchTasks();
@@ -258,10 +259,6 @@ const TodoList = () => {
                   }}
                 >
                   <ListItemText primary={task.name} sx={{ color: "#333" }} />
-                  <ListItemText
-                    primary={`Project: ${task.project}`}
-                    sx={{ textAlign: "right" }}
-                  />
                 </ListItemButton>
                 <IconButton onClick={() => handleDeleteTask(task._id)}>
                   <DeleteIcon sx={{ color: "#333" }} />
@@ -289,7 +286,28 @@ const TodoList = () => {
                     disableRipple
                   />
                 </ListItemIcon>
-
+                <TreeView
+                  aria-label="project-navigator"
+                  defaultCollapseIcon={<ExpandMoreIcon />}
+                  defaultExpandIcon={<ChevronRightIcon />}
+                  sx={{ overflowX: "hidden" }}
+                >
+                  <TreeItem nodeId={project.name} label={null}>
+                    {tasks.map((task, index) => {
+                      if (task.project === project._id) {
+                        return (
+                          <TreeItem
+                            nodeId={task._id.toString()}
+                            label={task.name}
+                            sx={{ fontSize: "1.5rem" }}
+                            key={index}
+                          />
+                        );
+                      }
+                      return null;
+                    })}
+                  </TreeItem>
+                </TreeView>
                 <ListItemButton
                   onClick={() => {
                     setProjectDialogData({
@@ -303,28 +321,7 @@ const TodoList = () => {
                     handleOpenProjectDialog();
                   }}
                 >
-                  <TreeView
-                    aria-label="project-navigator"
-                    defaultCollapseIcon={<ExpandMoreIcon />}
-                    defaultExpandIcon={<ChevronRightIcon />}
-                    sx={{ overflowX: "hidden" }}
-                  >
-                    <TreeItem nodeId={project.name} label={`${project.name}`}>
-                      {tasks.map((task, index) => {
-                        if (task.project === project._id) {
-                          return (
-                            <TreeItem
-                              nodeId={task._id.toString()}
-                              label={task.name}
-                              sx={{ fontSize: "1.5rem" }}
-                              key={index} // Add a unique key prop for each rendered item
-                            />
-                          );
-                        }
-                        return null;
-                      })}
-                    </TreeItem>
-                  </TreeView>
+                  <ListItemText primary={project.name} sx={{ color: "#333" }} />
                 </ListItemButton>
 
                 <IconButton onClick={() => handleDeleteProject(project._id)}>
