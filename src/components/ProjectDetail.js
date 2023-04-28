@@ -15,30 +15,21 @@ const ProjectDetails = ({
   isOpen,
   dialogProjectData,
   handleClose,
-  handleProjectCompletion,
   handleDeleteProject,
-  handleUpdateProjects,
+  handleUpdateProject,
   setProjectDialogData,
 }) => {
   const handleProjectTitleInputChange = (e) => {
     setProjectDialogData({
       ...dialogProjectData,
-      project: {
-        ...dialogProjectData.project,
-        name: e.target.value,
-      },
+      name: e.target.value,
     });
   };
-
-
 
   const handleProjectDescriptionInputChange = (e) => {
     setProjectDialogData({
       ...dialogProjectData,
-      project: {
-        ...dialogProjectData.project,
-        description: e.target.value,
-      },
+      description: e.target.value,
     });
   };
 
@@ -51,7 +42,7 @@ const ProjectDetails = ({
             sx={{ display: "flex", justifyContent: "space-between" }}
           >
             <TextField
-              value={dialogProjectData.project.name}
+              value={dialogProjectData.name}
               variant="standard"
               size="normal"
               onChange={handleProjectTitleInputChange}
@@ -62,15 +53,21 @@ const ProjectDetails = ({
             <span>
               <IconButton
                 onClick={() => {
-                  handleProjectCompletion(dialogProjectData.index);
+                  handleUpdateProject({
+                    ...dialogProjectData,
+                    name: dialogProjectData.name,
+                    description: dialogProjectData.description,
+                    completed: !dialogProjectData.completed,
+                    tasks: dialogProjectData.tasks,
+                  });
                   handleClose();
                 }}
               >
-                <Checkbox checked={dialogProjectData.project.completed} disableRipple />
+                <Checkbox checked={dialogProjectData.completed} disableRipple />
               </IconButton>
               <IconButton
                 onClick={() => {
-                  handleDeleteProject(dialogProjectData.index);
+                  handleDeleteProject(dialogProjectData._id);
                   handleClose();
                 }}
               >
@@ -89,7 +86,7 @@ const ProjectDetails = ({
             }}
           >
             <TextField
-              value={dialogProjectData.project.description}
+              value={dialogProjectData.description}
               fullWidth
               onChange={handleProjectDescriptionInputChange}
               multiline
@@ -102,11 +99,13 @@ const ProjectDetails = ({
               color="primary"
               sx={{ ml: 2 }}
               onClick={() => {
-                console.log(dialogProjectData)
-                handleUpdateProjects(dialogProjectData.index, {
-                  name: dialogProjectData.project.name,
-                  description: dialogProjectData.project.description,
-                  completed: dialogProjectData.project.completed,
+                console.log(dialogProjectData);
+                handleUpdateProject({
+                  ...dialogProjectData,
+                  name: dialogProjectData.name,
+                  description: dialogProjectData.description,
+                  completed: dialogProjectData.completed,
+                  tasks: dialogProjectData.tasks,
                 });
                 handleClose();
               }}
